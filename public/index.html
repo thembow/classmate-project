@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          selectable: true, // Allow selecting a date range
+          events: '/events', // Load events from your backend
+          
+          // Handle event click (for editing)
+          eventClick: async function (info) {
+            const newTitle = prompt("Edit event title:", info.event.title);
+            if (newTitle) {
+              await fetch('/events', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id: info.event.id,
+                  title: newTitle,
+                  start: info.event.start.toISOString(),
+                  end: info.event.end ? info.event.end.toISOString() : null
+                })
+              });
+
+              calendar.refetchEvents(); // Reload events after update
+            }
+          },
+
+          // Handle date select (for adding new event)
+          select: async function (info) {
+            const title = prompt("Enter event title:");
+            if (title) {
+              await fetch('/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: title,
+                  date: info.startStr
+                })
+              });
+
+              calendar.refetchEvents(); // Reload events after adding
+            }
+            calendar.unselect(); // Unselect date after the event is added
+          }
+        });
+
+        calendar.render();
+      });
+    </script>
+  </head>
+  <body>
+    <div id="calendar"></div>
+  </body>
+</html>
