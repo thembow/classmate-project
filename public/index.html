@@ -2,59 +2,155 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <title>Calendar</title>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-        
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          selectable: true, // Allow selecting a date range
-          events: '/events', // Load events from your backend
-          
-          // Handle event click (for editing)
-          eventClick: async function (info) {
-            const newTitle = prompt("Edit event title:", info.event.title);
-            if (newTitle) {
-              await fetch('/events', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  id: info.event.id,
-                  title: newTitle,
-                  start: info.event.start.toISOString(),
-                  end: info.event.end ? info.event.end.toISOString() : null
-                })
-              });
+    <style>
+      /* Ensure the calendar container is styled appropriately */
+      #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+      }
 
-              calendar.refetchEvents(); // Reload events after update
-            }
+      /* Modal overlay: covers entire screen, on top of the calendar */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;  /* High z-index to be on top */
+      }
+
+      /* Modal content container */
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        z-index: 1001;  /* Ensure inner content is on top */
+      }
+
+      .modal-content input, .modal-content button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="calendar"></div>
+
+    <!-- Modal for adding/editing events -->
+    <div id="eventModal" class="modal">
+      <div class="modal-content" id="modalContent">
+        <h3 id="modalTitle">Add Event</h3>
+        <input type="text" id="eventTitle" placeholder="Event Title" />
+        <input type="datetime-local" id="eventStart" />
+        <input type="datetime-local" id="eventEnd" />
+        <button id="saveEvent">Save</button>
+        <button id="cancelEvent">Cancel</button>
+      </div>
+    </div>
+
+    <script>
+      let selectedInfo = null;
+      let editEventId = null;
+      const modal = document.getElementById('eventModal');
+
+      // Open modal and populate inputs if provided
+      function openModal(titleText, startValue = '', endValue = '') {
+        document.getElementById('modalTitle').innerText = titleText;
+        document.getElementById('eventTitle').value = '';
+        document.getElementById('eventStart').value = startValue;
+        document.getElementById('eventEnd').value = endValue;
+        modal.style.display = 'flex';
+      }
+
+      // Close modal and reset temporary state
+      function closeModal() {
+        modal.style.display = 'none';
+        selectedInfo = null;
+        editEventId = null;
+      }
+
+      // Prevent clicks inside the modal from propagating to underlying elements
+      document.getElementById('modalContent').addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+      // Also prevent the overlay from closing unintentionally if clicked outside
+      modal.addEventListener('click', function(e) {
+        // Optionally: if you want clicking outside modal content to close it, uncomment below:
+        // closeModal();
+        e.stopPropagation();
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          selectable: true,
+          events: '/events',
+
+          select: function (info) {
+            selectedInfo = info;
+            // Use native datetime-local value formatting (slice to get YYYY-MM-DDTHH:mm)
+            const startVal = info.startStr.slice(0, 16);
+            const endVal = info.endStr ? info.endStr.slice(0, 16) : '';
+            openModal('Add Event', startVal, endVal);
           },
 
-          // Handle date select (for adding new event)
-          select: async function (info) {
-            const title = prompt("Enter event title:");
-            if (title) {
-              await fetch('/events', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  title: title,
-                  date: info.startStr
-                })
-              });
-
-              calendar.refetchEvents(); // Reload events after adding
-            }
-            calendar.unselect(); // Unselect date after the event is added
+          eventClick: function (info) {
+            editEventId = info.event.id;
+            const startVal = info.event.start.toISOString().slice(0, 16);
+            const endVal = info.event.end ? info.event.end.toISOString().slice(0, 16) : '';
+            openModal('Edit Event', startVal, endVal);
+            document.getElementById('eventTitle').value = info.event.title;
           }
         });
 
         calendar.render();
+
+        // Save button handler in modal
+        document.getElementById('saveEvent').addEventListener('click', async function () {
+          const title = document.getElementById('eventTitle').value;
+          const start = document.getElementById('eventStart').value;
+          const end = document.getElementById('eventEnd').value;
+
+          if (!title || !start) {
+            alert('Title and Start Time are required!');
+            return;
+          }
+
+          const payload = { title, start, end: end || null };
+
+          if (editEventId) {
+            payload.id = editEventId;
+            await fetch('/events', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          } else {
+            await fetch('/events', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          }
+
+          calendar.refetchEvents();
+          closeModal();
+        });
+
+        // Cancel button handler in modal
+        document.getElementById('cancelEvent').addEventListener('click', function () {
+          closeModal();
+        });
       });
     </script>
-  </head>
-  <body>
-    <div id="calendar"></div>
   </body>
 </html>
