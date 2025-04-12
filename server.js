@@ -2,12 +2,18 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const fetch = require('node-fetch');
 const PORT = 3000;
+const EventSource = require('eventsource');
+const cheerio = require('cheerio');
+
 
 const eventsFile = path.join(__dirname, 'events.json');
 
 app.use(express.json());
 app.use(express.static('public'));
+
+
 
 // Load events
 app.get('/events', (req, res) => {
@@ -70,6 +76,46 @@ app.put('/events', (req, res) => {
   });
 });
 
+// Streaming parking data
+app.get('/api/parking', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const url = 'https://parkingavailability.charlotte.edu/decks/stream';
+  const es = new EventSource(url)
+
+  es.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  }
+
+  req.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
+
+
+app.get('/api/libraryoccupancy', async (req, res) => {
+  try {
+    const response = await fetch('https://atkinsapi.charlotte.edu/occupancy/get/');
+    const data = await response.json();
+
+    console.log('Fetched occupancy data:', data); 
+
+    const occupancy = parseInt(data.atkins_current_occupancy) || 0;
+    res.json({ occupancy });
+  } catch (err) {
+    console.error('Error fetching occupancy:', err);
+    res.status(500).json({ error: 'Failed to fetch occupancy data' });
+  }
+});
+
+
+app.get('/timer', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'timer.htm'));
+});
 
 
 app.listen(PORT, () => {
