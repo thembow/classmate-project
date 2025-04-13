@@ -1,0 +1,38 @@
+ /* Ensure the calendar container is styled appropriately */
+      #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+      }
+
+      /* Modal overlay: covers entire screen, on top of the calendar */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;  /* High z-index to be on top */
+      }
+
+      /* Modal content container */
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        z-index: 1001;  /* Ensure inner content is on top */
+      }
+
+      .modal-content input, .modal-content button {
+        width: 100%;
+        margin-top: 10px;
+      }
+      .fc-event.urgent-task {
+      background-color: #ff4d4d !important;
+      border-color: #ff1a1a !important;
+      font-weight: bold;
+    }

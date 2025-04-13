@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+
+<main>
+  <link rel="stylesheet" href="/css/calendar.css">
+  <div id="calendar"></div>
+
+  <!-- Modal for adding/editing events -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content" id="modalContent">
+      <select id="entryType">
+        <option value="event">Event</option>
+        <option value="task">Task</option>
+      </select>
+      <h3 id="modalTitle">Add to Calendar</h3>
+      <input type="text" id="eventTitle" placeholder="Title" />
+      <input type="datetime-local" id="eventStart" />
+      <input type="datetime-local" id="eventEnd" />
+      <button id="saveEvent">Save</button>
+      <button id="cancelEvent">Cancel</button>
+      <button id="deleteEvent" style="background-color: red; color: white;">Delete</button>
+    </div>
+  </div>
+
+  <h3 style="text-align: center">Upcoming Tasks</h3>
+  <ul id="taskList" style="max-width: 600px; margin: auto;"></ul>
+</main>
+
+<script src="/js/calendar.js"></script>
+</body>
+</html>

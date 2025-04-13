@@ -11,7 +11,10 @@ const cheerio = require('cheerio');
 const eventsFile = path.join(__dirname, 'events.json');
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views')); // Ensure your views directory is set properly
 
 
 
@@ -28,7 +31,7 @@ app.get('/events', (req, res) => {
 
 // Save new event
 app.post('/events', (req, res) => {
-  const { title, start, end } = req.body;
+  const { title, start, end, type = "event" } = req.body;
 
   if (!title || !start) {
     return res.status(400).json({ error: 'Missing title or start date' });
@@ -38,7 +41,8 @@ app.post('/events', (req, res) => {
     id: Date.now().toString(),
     title,
     start,
-    end: end || null
+    end: end || null,
+    type
   };
 
   fs.readFile(eventsFile, (err, data) => {
@@ -56,7 +60,7 @@ app.post('/events', (req, res) => {
 
 // Update event
 app.put('/events', (req, res) => {
-  const { id, title, start, end } = req.body;
+  const { id, title, start, end, type = "event" } = req.body;
 
   fs.readFile(eventsFile, (err, data) => {
     if (err) return res.status(500).json({ error: 'Failed to read events' });
@@ -68,6 +72,7 @@ app.put('/events', (req, res) => {
     event.title = title;
     event.start = start;
     event.end = end;
+    event.type = type;
 
     fs.writeFile(eventsFile, JSON.stringify(events, null, 2), (err) => {
       if (err) return res.status(500).json({ error: 'Failed to update event' });
@@ -117,7 +122,41 @@ app.get('/timer', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'timer.htm'));
 });
 
+app.delete('/events/:id', (req, res) => {
+  const id = req.params.id;
+  fs.readFile(eventsFile, (err, data) => {
+    if (err) {
+      console.error("Error reading events file:", err);
+      return res.status(500).json({ error: 'Failed to read events' });
+    }
+    let events = JSON.parse(data);
+    // Filter out the event with matching id:
+    events = events.filter(e => e.id !== id);
+    fs.writeFile(eventsFile, JSON.stringify(events, null, 2), (err) => {
+      if (err) {
+        console.error("Error writing events file:", err);
+        return res.status(500).json({ error: 'Failed to delete event' });
+      }
+      res.sendStatus(200);
+    });
+  });
+});
+
+app.get('/calendar', (req, res) => {
+  res.render('calendar'); // or whatever your homepage is
+});
+
+app.get('/availability', (req, res) => {
+  res.render('availability');
+});
+
+app.get('/productivity', (req, res) => {
+  res.render('productivity');
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+
