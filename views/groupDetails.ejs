@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Group Details</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <h1><%= group.title %></h1>
+    <h2>Group Members</h2>
+    <ul>
+      <% if (group.members && group.members.length > 0) { %>
+        <% group.members.forEach(function(member) { %>
+          <li><%= member.username || member %> <!-- If member is populated, show member.username --> </li>
+        <% }); %>
+      <% } else { %>
+        <li>No members in this group.</li>
+      <% } %>
+    </ul>
+    
+    <!-- Optionally add controls for inviting new members -->
+    <form id="inviteForm">
+     <label for="inviteUser">Invite Member:</label>
+    <select id="inviteUser" name="inviteUser">
+    <option value="">Select a user to invite</option>
+    </select>
+      <button type="submit">Invite</button>
+    </form>
+    <div id="inviteMessage"></div>
+  </main>
+
+  <script>
+  const group = <%- JSON.stringify(group) %>;
+  const currentMemberIds = group.members.map(m => m._id);
+
+  async function loadUsers() {
+    try {
+      const res = await fetch('/groups/allUsers', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      if (!res.ok) {
+        throw new Error(`Error fetching users: ${res.statusText}`);
+      }
+
+      const users = await res.json();
+      const inviteSelect = document.getElementById('inviteUser');
+
+      const existingMembers = new Set(group.members.map(member => member._id));
+      const filteredUsers = users.filter(user => !existingMembers.has(user._id));
+
+      filteredUsers.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user._id;
+        option.textContent = user.username;
+        inviteSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error('Failed to load users', err);
+    }
+  }
+
+  loadUsers();
+
+  document.getElementById('inviteForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const inviteUser = document.getElementById('inviteUser').value.trim();
+    if (!inviteUser) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch('/groups/<%= group._id %>/invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer " + token
+        },
+        body: JSON.stringify({ userId: inviteUser })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById('inviteMessage').innerText = 'Invitation sent!';
+      } else {
+        document.getElementById('inviteMessage').innerText = data.error || 'Error inviting member.';
+      }
+    } catch (err) {
+      document.getElementById('inviteMessage').innerText = 'Error: ' + err.message;
+    }
+  });
+</script>
+</body>
+</html>

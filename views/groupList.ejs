@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Study Groups</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <h1>Your Study Groups</h1>
+    <ul id="groupList">
+      <!-- Groups will be dynamically added here -->
+    </ul>
+    <div id="message"></div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+  const token = localStorage.getItem('token');
+  const messageElement = document.getElementById('message');
+  const groupListElement = document.getElementById('groupList');
+  
+  // Check for token presence
+  if (!token) {
+    messageElement.innerText = 'You are not logged in. Please log in first.';
+    return;
+  }
+
+  try {
+    const res = await fetch('/groups', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }, 
+      credentials: 'same-origin' // Ensure cookies are sent with the request
+    });
+    
+    if (res.ok) {
+      const groups = await res.json();
+
+      if (groups.length > 0) {
+        groups.forEach(group => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="/groups/${group._id}">${group.title}</a>`;
+          groupListElement.appendChild(li);
+        });
+      } else {
+        groupListElement.innerHTML = '<li>No groups found. <a href="/groups/groupCreate">Create one?</a></li>';
+      }
+    } else {
+      messageElement.innerText = 'Error fetching your groups. Make sure you are logged in.';
+    }
+  } catch (err) {
+    messageElement.innerText = 'Error: ' + err.message;
+  }
+});
+  </script>
+
+</body>
+</html>

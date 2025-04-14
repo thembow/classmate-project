@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Study Group</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main>
+    <h1>Create a New Study Group</h1>
+    <!-- Group creation form -->
+    <form id="groupCreateForm">
+      <div>
+        <label for="groupTitle">Group Title:</label>
+        <input type="text" id="groupTitle" name="groupTitle" placeholder="Enter group title" required>
+      </div>
+
+      <!-- Invite section -->
+      <div>
+        <label for="inviteUser">Invite Member:</label>
+        <select id="inviteUser">
+          <option value="">Select a user</option>
+        </select>
+        <button type="button" id="addInvite">Add</button>
+      </div>
+
+      <!-- Display invited members -->
+      <div>
+        <h3>Invited Members:</h3>
+        <ul id="invitedList">
+          <!-- Populated by JavaScript -->
+        </ul>
+      </div>
+
+      <button type="submit">Create Group</button>
+    </form>
+
+    <div id="message"></div>
+  </main>
+
+  <script>
+    // Embed the current user from the server
+    const currentUser = <%- JSON.stringify(currentUser) %>;
+
+    // This array will keep track of the invited members (their user IDs)
+    let invitedMembers = [];
+
+    // Populate the invite dropdown with all possible users excluding the current user
+    async function loadUsers() {
+      try {
+        const res = await fetch('/groups/allUsers', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin'  // Sends cookies along with request
+        });
+
+        if (!res.ok) {
+          throw new Error(`Error fetching users: ${res.statusText}`);
+        }
+
+        const users = await res.json();
+        const inviteSelect = document.getElementById('inviteUser');
+
+        // Clear any existing options (besides the default)
+        inviteSelect.innerHTML = '<option value="">Select a user</option>';
+
+        // Filter out the current user and add the remaining users to the dropdown
+        users
+          .filter(user => user._id !== currentUser.id && user._id !== currentUser._id)
+          .forEach(user => {
+            const option = document.createElement('option');
+            option.value = user._id;
+            option.textContent = user.username;
+            inviteSelect.appendChild(option);
+          });
+      } catch (err) {
+        console.error('Failed to load users', err);
+      }
+    }
+    loadUsers();
+
+    // Handler to add a selected user to the invited list
+    document.getElementById('addInvite').addEventListener('click', function() {
+      const select = document.getElementById('inviteUser');
+      const userId = select.value;
+      // Get the text (username) of the selected option
+      const username = select.options[select.selectedIndex].text;
+
+      // Only add if a valid user was selected and not already invited
+      if (userId && !invitedMembers.includes(userId)) {
+        invitedMembers.push(userId);
+
+        // Update the invited members list in the DOM
+        const li = document.createElement('li');
+        li.textContent = username;
+        li.setAttribute('data-userid', userId);
+        document.getElementById('invitedList').appendChild(li);
+      }
+    });
+
+    // Handle the form submission to create the group
+    document.getElementById('groupCreateForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('groupTitle').value.trim();
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        document.getElementById('message').innerText = 'You need to log in first.';
+        return;
+      }
+      
+      try {
+        const res = await fetch('/groups', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer " + token
+          },
+          // Send the group title and the invited members array as members
+          body: JSON.stringify({
+            title,
+            members: invitedMembers
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          document.getElementById('message').innerText = 'Group created successfully!';
+          setTimeout(() => window.location.href = '/groups/page', 1500);
+        } else {
+          document.getElementById('message').innerText = data.error || 'Error creating group.';
+        }
+      } catch (err) {
+        document.getElementById('message').innerText = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
