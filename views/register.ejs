@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="register-container">
+      <h1>Create Account</h1>
+      <form id="registerForm">
+        <label for="username">Username:</label>
+        <input id="username" name="username" type="text" required />
+
+        <label for="password">Password:</label>
+        <input id="password" name="password" type="password" required />
+
+        <button type="submit">Register</button>
+      </form>
+      <div id="errorMessage" style="color: red;"></div>
+    </div>
+    <script>
+      document.getElementById("registerForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        try {
+          const res = await fetch("/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            // Save token in localStorage
+            localStorage.setItem("token", data.token);
+            // Redirect to calendar after successful registration
+            window.location.href = "/calendar";
+          } else {
+            document.getElementById("errorMessage").innerText = data.error || "Registration failed.";
+          }
+        } catch (err) {
+          document.getElementById("errorMessage").innerText = "Error: " + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

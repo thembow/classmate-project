@@ -5,7 +5,7 @@
   <title>Classmate App</title>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
   <link rel="stylesheet" href="/css/calendar.css" />
-    <link rel="stylesheet" href="/css/avail.css"> 
+  <link rel="stylesheet" href="/css/avail.css" /> 
 </head>
 <body>
   <header>
@@ -13,5 +13,8 @@
       <a href="/calendar">Calendar</a>
       <a href="/availability">Availability</a>
       <a href="/productivity">Productivity</a>
+      <!-- This span will be updated by an external script -->
+      <span id="authLinks"></span>
     </nav>
+    <script src="/js/authHeader.js"></script>
   </header>
