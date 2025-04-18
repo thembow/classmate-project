@@ -30,6 +30,18 @@
       <button type="submit">Invite</button>
     </form>
     <div id="inviteMessage"></div>
+
+    <h2>Send Message to Group</h2>
+    <form id="groupMessageForm">
+      <label for="subject">Subject:</label>
+      <input type="text" id="subject" required><br>
+      
+      <label for="message">Message:</label><br>
+      <textarea id="message" rows="5" cols="40" required></textarea><br>
+      
+      <button type="submit">Send Message</button>
+    </form>
+    <div id="emailMessage"></div>
   </main>
 
   <script>
@@ -94,6 +106,38 @@
       document.getElementById('inviteMessage').innerText = 'Error: ' + err.message;
     }
   });
+
+
+  document.getElementById('groupMessageForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const subject = document.getElementById('subject').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  if (!subject || !message) return;
+
+  const token = localStorage.getItem('token');
+
+  try {
+    const res = await fetch(`/groups/<%= group._id %>/email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ subject, message })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('emailMessage').innerText = 'Message sent to group!';
+    } else {
+      document.getElementById('emailMessage').innerText = data.error || 'Failed to send message.';
+    }
+  } catch (err) {
+    document.getElementById('emailMessage').innerText = 'Error: ' + err.message;
+  }
+});
 </script>
 </body>
 </html>

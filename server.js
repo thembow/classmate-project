@@ -1,5 +1,5 @@
 // server.js
-
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const jwt = require('jsonwebtoken');
@@ -63,10 +63,14 @@ app.get('/login', (req, res) => {
 
 // Registration endpoint using MongoDB
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password required.' });
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Username, email, and password required.' });
+  }
+  // optional: validate email format server‑side
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    return res.status(409).json({ error: 'Email already in use.' });
   }
   
   try {
@@ -78,7 +82,7 @@ app.post('/register', async (req, res) => {
     
     // Hash the password and save user
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
+    const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
     
     // Sign a JWT

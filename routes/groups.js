@@ -3,6 +3,8 @@ const router = express.Router();
 const Group = require('../models/Group');
 const User = require('../models/User');
 const authenticateJWT = require('../middleware/auth'); // JWT middleware
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
 
 // Place static routes first
 
@@ -82,6 +84,39 @@ router.get('/:id', authenticateJWT, async (req, res) => {
     res.render('groupDetails', { group });
   } catch (err) {
     res.status(500).send('Error loading group.');
+  }
+});
+
+
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+  username: 'api',
+  key: process.env.MAILGUN_API_KEY, // make sure it's stored as MAILGUN_API_KEY
+});
+
+router.post('/:id/email', authenticateJWT, async (req, res) => {
+  const { subject, message } = req.body;
+
+  try {
+    const group = await Group.findById(req.params.id).populate('members', 'email username');
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+
+    const recipientEmails = group.members.map(member => member.email);
+    const domain = process.env.MAILGUN_DOMAIN; // sandboxXYZ.mailgun.org
+    const groupName = group.title.toLowerCase().replace(/\s+/g, '_');
+    const from = `${group.title} <${groupName}@${domain}>`;
+
+    await mg.messages.create(domain, {
+      from,
+      to: recipientEmails,
+      subject,
+      text: message
+    });
+
+    res.json({ message: 'Email sent successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to send email' });
   }
 });
 

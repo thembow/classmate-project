@@ -3,6 +3,9 @@
     <div class="register-container">
       <h1>Create Account</h1>
       <form id="registerForm">
+        <label for="email">Email:</label>
+        <input id="email" name="email" type="email" required />
+
         <label for="username">Username:</label>
         <input id="username" name="username" type="text" required />
 
@@ -18,13 +21,14 @@
         e.preventDefault();
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
+        const email = document.getElementById("email").value;
         try {
           const res = await fetch("/register", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email, username, password })
           });
           const data = await res.json();
           if (res.ok) {

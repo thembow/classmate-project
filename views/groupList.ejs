@@ -17,47 +17,52 @@
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async function() {
-  const token = localStorage.getItem('token');
-  const messageElement = document.getElementById('message');
-  const groupListElement = document.getElementById('groupList');
-  
-  // Check for token presence
-  if (!token) {
-    messageElement.innerText = 'You are not logged in. Please log in first.';
-    return;
-  }
-
-  try {
-    const res = await fetch('/groups', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }, 
-      credentials: 'same-origin' // Ensure cookies are sent with the request
-    });
+  document.addEventListener('DOMContentLoaded', async function() {
+    const token = localStorage.getItem('token');
+    const messageElement = document.getElementById('message');
+    const groupListElement = document.getElementById('groupList');
     
-    if (res.ok) {
-      const groups = await res.json();
-
-      if (groups.length > 0) {
-        groups.forEach(group => {
-          const li = document.createElement('li');
-          li.innerHTML = `<a href="/groups/${group._id}">${group.title}</a>`;
-          groupListElement.appendChild(li);
-        });
-      } else {
-        groupListElement.innerHTML = '<li>No groups found. <a href="/groups/groupCreate">Create one?</a></li>';
-      }
-    } else {
-      messageElement.innerText = 'Error fetching your groups. Make sure you are logged in.';
+    // Check for token presence
+    if (!token) {
+      messageElement.innerText = 'You are not logged in. Please log in first.';
+      return;
     }
-  } catch (err) {
-    messageElement.innerText = 'Error: ' + err.message;
-  }
-});
-  </script>
+
+    try {
+      const res = await fetch('/groups', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }, 
+        credentials: 'same-origin'
+      });
+
+      if (res.ok) {
+        const groups = await res.json();
+
+        if (groups.length > 0) {
+          groups.forEach(group => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="/groups/${group._id}">${group.title}</a>`;
+            groupListElement.appendChild(li);
+          });
+        } else {
+          groupListElement.innerHTML = '<li>No groups found :(</li>';
+        }
+
+        const createGroupLi = document.createElement('p');
+        createGroupLi.innerHTML = `<a href="/groups/create">Create a Group</a>`;
+        groupListElement.appendChild(createGroupLi);
+
+      } else {
+        messageElement.innerText = 'Error fetching your groups. Make sure you are logged in.';
+      }
+    } catch (err) {
+      messageElement.innerText = 'Error: ' + err.message;
+    }
+  });
+</script>
 
 </body>
 </html>
