@@ -40,7 +40,7 @@ fetch('/api/libraryoccupancy')
   .then(res => res.json())
   .then(data => {
     const occ = document.createElement('div');
-    occ.innerHTML = `<h2>📚 Atkins Library Occupancy: ${data.occupancy} people</h2>`;
+    occ.innerHTML = `<h2>Atkins Library Occupancy: ${data.occupancy} people</h2>`;
     document.body.insertBefore(occ, document.body.firstChild);
   })
   .catch(err => {

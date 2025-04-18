@@ -32,6 +32,10 @@ app.set('views', path.join(__dirname, 'views'));
 // PUBLIC ENDPOINTS
 // ------------------------------
 
+app.get('/', (req, res) => {    
+    res.render('index', { currentUser: req.user || null });
+});
+
 // Render pages
 app.get('/calendar', (req, res) => {
   res.render('calendar');
