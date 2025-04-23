@@ -1,5 +1,8 @@
 <%- include('partials/header') %>
+<link rel="stylesheet" href="/css/register.css" />
 
+
+    <main class="main-content">
     <div class="register-container">
       <h1>Create Account</h1>
       <form id="registerForm">
@@ -16,6 +19,7 @@
       </form>
       <div id="errorMessage" style="color: red;"></div>
     </div>
+  </main>
     <script>
       document.getElementById("registerForm").addEventListener("submit", async function(e) {
         e.preventDefault();

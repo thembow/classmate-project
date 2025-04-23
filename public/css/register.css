@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,600');
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Jost', sans-serif;
+    background: linear-gradient(to bottom, #ffffff,#005035,#A49665);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px;
+    font-weight: bold;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #f2f2f2;
+    transition: color 0.3s;
+}
+
+.navbar a:hover {
+    color: #004225;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-container {
+    width: 350px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.register-container h1 {
+    color: #fff;
+    font-size: 2.3em;
+    margin-bottom: 30px;
+}
+
+label {
+    color: #fff;
+    font-size: 1em;
+    margin-bottom: 5px;
+    align-self: flex-start;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    background: #e0dede;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1em;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #A49665;
+    color: #fff;
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease-in;
+}
+
+button:hover {
+    background: #005035;
+}
+
+#errorMessage {
+    color: red;
+    margin-top: 15px;
+    font-weight: bold;
+}

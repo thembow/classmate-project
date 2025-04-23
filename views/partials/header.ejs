@@ -4,19 +4,29 @@
   <meta charset="utf-8" />
   <title>Classmate App</title>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
-  <link rel="stylesheet" href="/css/calendar.css" />
   <link rel="stylesheet" href="/css/avail.css" /> 
 </head>
 <body>
   <header>
-    <h1 style="color:rgb(0 80 53)">ClassMate</h1>
-    <nav>
-      <a href="/calendar">Calendar</a>
-      <a href="/availability">Availability</a>
-      <a href="/productivity">Productivity</a>
-      <a href="/groups/page">My Groups</a>
-      <!-- This span will be updated by an external script -->
-      <span id="authLinks"></span>
-    </nav>
-    <script src="/js/authHeader.js"></script>
+    <div class="navbar">
+      <div class="nav-left">
+        <a href="/" class="logo"><h1>ClassMate</h1></a>
+      </div>
+      <div class="nav-center">
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/calendar">Calendar</a></li>
+          <li><a href="/availability">Availability</a></li>
+          <li><a href="/productivity">Productivity</a></li>
+          <li><a href="/groups/page">My Groups</a></li>
+        </ul>
+      </div>
+      <div class="nav-right">
+        <a href="/login">Login</a>
+        <span>|</span>
+        <a href="/register">Register</a>
+      </div>
+    </div>
   </header>
+</body>
+  

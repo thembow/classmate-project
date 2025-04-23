@@ -1,5 +1,8 @@
 <%- include('partials/header') %>
+<link rel="stylesheet" href="/css/login.css" />
 
+
+    <main class="main-content">
     <div class="login-container">
       <h1>Login</h1>
       <form id="loginForm">
@@ -11,8 +14,9 @@
 
         <button type="submit">Login</button>
       </form>
-      <div id="errorMessage" style="color: red;"></div>
+      <div id="errorMessage"></div>
     </div>
+  </main>
     <script>
       document.getElementById("loginForm").addEventListener("submit", async function(e) {
         e.preventDefault();

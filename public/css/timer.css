@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,600');
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Jost', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px;
+    font-weight: bold;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #f2f2f2;
+    transition: color 0.3s;
+}
+
+.navbar a:hover {
+    color: #004225;
+}
+
+  /* Centers the timer in the remaining space */
+.timer-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+  /* Pomodoro timer box styling */
+.timer-container {                   
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.5);
+    padding: 40px;
+    text-align: center;
+    width: 350px;
+    color: #fff;
+}
+
+#timer {
+    font-size: 64px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #fff;
+    text-shadow: 0 0 8px #A49665;
+}
+
+input[type="number"] {
+    width: 80px;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 8px;
+    background-color: #A49665;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #005035;
+}

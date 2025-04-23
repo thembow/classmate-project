@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Jost', sans-serif;
+    color: #fff;
+}
+
+main {
+    max-width: 800px;
+    margin: 40px auto;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 5px 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 3px #000;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+form div {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #fff;
+}
+
+input[type="text"],
+select,
+textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #e0dede;
+    color: #333;
+    font-size: 1rem;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    background: #A49665;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background: #005035;
+}
+
+#message,
+#emailMessage,
+#inviteMessage {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+ul li {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+.nav-links {
+    display: flex;
+    gap: 25px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    background: none;         
+    padding: 0;               
+    border: none;
+}
+
+
+
