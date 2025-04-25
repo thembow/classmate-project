@@ -57,27 +57,18 @@ cd classmate-project
 2. Install dependencies
 ```bash
 # For backend
-cd server
-npm install
-
-# For frontend
-cd ../client
 npm install
 ```
-3. Set up environment variables
-Create a .env file in the server/ directory and add your configuration:
+3. Set up emailing
+* Create an account at  https://www.mailgun.com/
+* Add the email addresses you wish to use, and click verify in each respective inbox
+5. Create a .env file, and add your API Key and mailgun domain
 ```bash
-MONGO_URI=your_mongodb_connection_string
-PORT=5000
+MAILGUN_API_KEY=
+MAILGUN_DOMAIN=
 ```
-4. Start the development servers
+4. Start the server!
 ```bash
-# Backend
-cd server
-npm run dev
-
-# Frontend (in a separate terminal)
-cd ../client
 npm start
 ```
-The app will be live at http://localhost:3000 and connect to the backend at http://localhost:5000.
+The app will be live at http://localhost:3000 
