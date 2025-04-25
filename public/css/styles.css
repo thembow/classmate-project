@@ -9,15 +9,15 @@
 }
 
 .logo-3d {
-    width: 500px; /* Bigger logo */
-    filter: brightness(0) invert(1); /* Makes it white */
+    width: 500px; 
+    filter: brightness(0) invert(1); /
     transform: rotateY(15deg) rotateX(10deg);
     transition: transform 0.5s ease, filter 0.3s ease;
 }
 
 .logo-3d:hover {
     transform: rotateY(0deg) rotateX(0deg) scale(1.1);
-    filter: brightness(1.5) invert(1); /* Glow on hover */
+    filter: brightness(1.5) invert(1); 
 }
 
 .shadow-text {

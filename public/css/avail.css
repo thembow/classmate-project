@@ -142,7 +142,6 @@ tr:hover {
   border-radius: 5px;
 }
 
-/* Make table responsive */
 @media (max-width: 600px) {
   table, thead, tbody, th, td, tr {
     display: block;

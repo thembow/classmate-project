@@ -26,7 +26,6 @@ body {
     color: #004225;
 }
 
-  /* Centers the timer in the remaining space */
 .timer-wrapper {
     flex: 1;
     display: flex;
@@ -34,7 +33,6 @@ body {
     align-items: center;
 }
 
-  /* Pomodoro timer box styling */
 .timer-container {                   
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);

@@ -14,14 +14,13 @@
     <ul>
       <% if (group.members && group.members.length > 0) { %>
         <% group.members.forEach(function(member) { %>
-          <li><%= member.username || member %> <!-- If member is populated, show member.username --> </li>
+          <li><%= member.username || member %> </li>
         <% }); %>
       <% } else { %>
         <li>No members in this group.</li>
       <% } %>
     </ul>
     
-    <!-- Optionally add controls for inviting new members -->
     <form id="inviteForm">
      <label for="inviteUser">Invite Member:</label>
     <select id="inviteUser" name="inviteUser">

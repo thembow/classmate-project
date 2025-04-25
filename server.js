@@ -7,12 +7,11 @@ const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
 const EventSource = require('eventsource');
 const cheerio = require('cheerio');
-const authenticateJWT = require('./middleware/auth'); // JWT middleware
+const authenticateJWT = require('./middleware/auth'); 
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-require('./db'); // Ensure MongoDB connection is established
+require('./db'); 
 
-// Import models
 const Event = require('./models/Event');
 const User = require('./models/User');
 
@@ -28,15 +27,12 @@ app.use('/groups', groupRoutes);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ------------------------------
-// PUBLIC ENDPOINTS
-// ------------------------------
+
 
 app.get('/', (req, res) => {    
     res.render('index', { currentUser: req.user || null });
 });
 
-// Render pages
 app.get('/calendar', (req, res) => {
   res.render('calendar');
 });
@@ -57,43 +53,34 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-// ------------------------------
-// AUTHENTICATION ENDPOINTS
-// ------------------------------
 
-// Registration endpoint using MongoDB
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Username, email, and password required.' });
   }
-  // optional: validate email format server‑side
   const existingEmail = await User.findOne({ email });
   if (existingEmail) {
     return res.status(409).json({ error: 'Email already in use.' });
   }
   
   try {
-    // Check if user already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ error: 'Username already exists.' });
     }
     
-    // Hash the password and save user
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
     
-    // Sign a JWT
     const payload = { id: newUser._id, username: newUser.username };
     const token = jwt.sign(payload, 'yourJWTSecret', { expiresIn: '1h' });
     
-    // Set token as a cookie
     res.cookie('auth_token', token, {
-        httpOnly: true, // Ensure it's not accessible via JavaScript
-        secure: process.env.NODE_ENV === 'production', // Only set cookies over HTTPS in production
-        maxAge: 24 * 60 * 60 * 1000 // Cookie expiry (1 day)
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: 24 * 60 * 60 * 1000 
         });
     res.status(201).json({ message: 'User registered' });
   } catch (err) {
@@ -102,32 +89,27 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Login endpoint using MongoDB
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
   try {
-    // Find user by username
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
     
-    // Compare provided password to stored hash
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
     
-    // Sign a JWT if successful
     const payload = { id: user._id, username: user.username };
     const token = jwt.sign(payload, 'yourJWTSecret', { expiresIn: '1h' });
     
-    // Set token as a cookie
     res.cookie('auth_token', token, { 
       httpOnly: true, 
-      maxAge: 3600000, // 1 hour expiry
-      secure: process.env.NODE_ENV === 'production' // Set to true in production
+      maxAge: 3600000, 
+      secure: process.env.NODE_ENV === 'production' 
     });
     return res.json({ message: 'Login successful' });
   } catch (err) {
@@ -136,17 +118,12 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Logout endpoint to clear cookies
 app.post('/logout', (req, res) => {
   res.clearCookie('auth_token');
   res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// ------------------------------
-// PROTECTED ENDPOINTS (EVENTS)
-// ------------------------------
 
-// Get events for the logged-in user
 app.get('/events', authenticateJWT, async (req, res) => {
   try {
     const events = await Event.find({ userId: req.user.id });
@@ -157,7 +134,6 @@ app.get('/events', authenticateJWT, async (req, res) => {
   }
 });
 
-// Save new event and attach the user id from the token
 app.post('/events', authenticateJWT, async (req, res) => {
   const { title, start, end, type = "event" } = req.body;
   
@@ -181,7 +157,6 @@ app.post('/events', authenticateJWT, async (req, res) => {
   }
 });
 
-// Update event (ensuring the event belongs to the logged-in user)
 app.put('/events', authenticateJWT, async (req, res) => {
   const { id, title, start, end, type = "event" } = req.body;
   
@@ -204,25 +179,8 @@ app.put('/events', authenticateJWT, async (req, res) => {
   }
 });
 
-// Delete event (ensuring the event belongs to the logged-in user)
-app.delete('/events/:id', authenticateJWT, async (req, res) => {
-  try {
-    const result = await Event.deleteOne({ _id: req.params.id, userId: req.user.id });
-    if (result.deletedCount === 0) {
-      return res.status(403).json({ error: 'You are not allowed to delete this event.' });
-    }
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Error deleting event:", err);
-    res.status(500).json({ error: 'Failed to delete event' });
-  }
-});
 
-// ------------------------------
-// OTHER PUBLIC ENDPOINTS
-// ------------------------------
 
-// Streaming parking data (left public)
 app.get('/api/parking', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -242,7 +200,6 @@ app.get('/api/parking', (req, res) => {
   });
 });
 
-// Library occupancy (left public)
 app.get('/api/libraryoccupancy', async (req, res) => {
   try {
     const response = await fetch('https://atkinsapi.charlotte.edu/occupancy/get/');
@@ -258,7 +215,6 @@ app.get('/api/libraryoccupancy', async (req, res) => {
   }
 });
 
-// Timer
 app.get('/timer', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'timer.htm'));
 });

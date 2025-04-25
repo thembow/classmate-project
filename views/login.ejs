@@ -34,9 +34,7 @@
           
           const data = await res.json();
           if (res.ok) {
-            // Save token in localStorage so other API calls can include it as a Bearer token.
             localStorage.setItem("token", data.token);
-            // Redirect to the calendar page after successful login
             window.location.href = "/calendar";
           } else {
             document.getElementById("errorMessage").innerText = data.error || "Login failed.";

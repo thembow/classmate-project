@@ -2,7 +2,6 @@ let selectedInfo = null;
 let editEventId = null;
 const modal = document.getElementById('eventModal');
 
-// Open modal and populate inputs if provided
 function openModal(titleText, startValue = '', endValue = '') {
   document.getElementById('modalTitle').innerText = titleText;
   document.getElementById('eventTitle').value = '';
@@ -13,7 +12,6 @@ function openModal(titleText, startValue = '', endValue = '') {
   modal.style.display = 'flex';
 }
 
-// Close modal and reset temporary state
 function closeModal() {
   modal.style.display = 'none';
   selectedInfo = null;
@@ -24,12 +22,10 @@ function getAuthToken() {
   return localStorage.getItem("token");
 }
 
-// Prevent clicks inside the modal from propagating to underlying elements
 document.getElementById('modalContent').addEventListener('click', function(e) {
   e.stopPropagation();
 });
 
-// Also prevent the overlay from closing unintentionally if clicked outside
 modal.addEventListener('click', function(e) {
   closeModal();
   e.stopPropagation();
@@ -46,11 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const token = getAuthToken();
         const res = await fetch('/events', {
           headers: {
-            "Authorization": "Bearer " + token // Added space after Bearer
+            "Authorization": "Bearer " + token 
           }
         });
 
-        // Always check for a non-200 status to catch error responses
         if (!res.ok) {
           const errorResponse = await res.json();
           throw new Error(errorResponse.error || 'Failed to fetch events');
@@ -58,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const events = await res.json();
 
-        // Verify that events is an array
         if (!Array.isArray(events)) {
           throw new Error('Events returned is not an array');
         }
@@ -110,11 +104,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const token = getAuthToken();
     const res = await fetch('/events', {
       headers: {
-        "Authorization": "Bearer " + token // Include header here too
+        "Authorization": "Bearer " + token 
       }
     });
     
-    // Check for errors
     if (!res.ok) {
       const errorResponse = await res.json();
       throw new Error(errorResponse.error || 'Failed to fetch tasks');
@@ -143,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   fetchAndDisplayTasks();
 
-  // Save button handler in modal
   document.getElementById('saveEvent').addEventListener('click', async function () {
     const token = getAuthToken();
     const title = document.getElementById('eventTitle').value;
@@ -158,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const type = document.getElementById('entryType').value;
     const payload = { title, start, end: end || null, type };
 
-    // Include token for both update and new events
     if (editEventId) {
       payload.id = editEventId;
       await fetch('/events', {
@@ -185,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function () {
     closeModal();
   });
 
-  // Cancel button handler in modal
   document.getElementById('cancelEvent').addEventListener('click', function () {
     closeModal();
   });

@@ -9,7 +9,6 @@ body {
     min-height: 100vh;
 }
 
-/* Navbar Styling */
 .navbar {
     display: flex;
     justify-content: center;
@@ -28,7 +27,6 @@ body {
     color: #004225;
 }
 
-/* Centered login box */
 .main-content {
     flex: 1;
     display: flex;

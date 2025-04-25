@@ -11,7 +11,6 @@
   <main>
     <h1>Your Study Groups</h1>
     <ul id="groupList">
-      <!-- Groups will be dynamically added here -->
     </ul>
     <div id="message"></div>
   </main>
@@ -22,7 +21,6 @@
     const messageElement = document.getElementById('message');
     const groupListElement = document.getElementById('groupList');
     
-    // Check for token presence
     if (!token) {
       messageElement.innerText = 'You are not logged in. Please log in first.';
       return;

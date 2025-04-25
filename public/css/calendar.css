@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Work+Sans:400,600');
- /* Ensure the calendar container is styled appropriately */
       #calendar {
         max-width: 900px;
         margin: 40px auto;
@@ -11,7 +10,6 @@
         color: #fff;
       }
 
-      /* Modal overlay: covers entire screen, on top of the calendar */
       .modal {
         position: fixed;
         top: 0;
@@ -22,10 +20,9 @@
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 1000;  /* High z-index to be on top */
+        z-index: 1000;  
       }
 
-      /* Modal content container */
       .modal-content {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
@@ -69,7 +66,6 @@
         box-sizing: border-box;
       }
 
-      /* Modal button hover effect */
       .modal-content button:hover {
         background: #005035;
       }

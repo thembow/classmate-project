@@ -1,12 +1,10 @@
-// Set up the EventSource to receive parking data updates
     const eventSource = new EventSource('/api/parking');
 
     eventSource.onmessage = function(event) {
     try {
-        const data = JSON.parse(event.data);  // Define the data variable here
+        const data = JSON.parse(event.data); 
         console.log('Received data:', data);
 
-        // Clear the table before inserting new rows
         const tbody = document.querySelector('#parkingTable tbody');
         tbody.innerHTML = ''; 
 
@@ -35,7 +33,6 @@
       alert('Failed to load parking data. Please try again later.');
     };
 
-// New code: Fetch library occupancy data
 fetch('/api/libraryoccupancy')
   .then(res => res.json())
   .then(data => {

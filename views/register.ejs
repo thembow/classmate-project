@@ -1,7 +1,5 @@
 <%- include('partials/header') %>
 <link rel="stylesheet" href="/css/register.css" />
-
-
     <main class="main-content">
     <div class="register-container">
       <h1>Create Account</h1>
@@ -36,9 +34,7 @@
           });
           const data = await res.json();
           if (res.ok) {
-            // Save token in localStorage
             localStorage.setItem("token", data.token);
-            // Redirect to calendar after successful registration
             window.location.href = "/calendar";
           } else {
             document.getElementById("errorMessage").innerText = data.error || "Registration failed.";
